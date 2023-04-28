@@ -24,4 +24,4 @@ pipeline {
        } // Add additional stages for testing and deploying your application
     }
     }
-}
+
