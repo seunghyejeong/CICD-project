@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HOME = tool 'Docker'
+        PATH = "$DOCKER_HOME/bin:$PATH"
+      }
+
     stages {
         stage('Checkout') {
             steps {
