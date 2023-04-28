@@ -4,10 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/jeongbami/gitops-repository.git']]])
+                git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
             }
         }
-        
-        // Add additional stages for building, testing, and deploying your application
     }
 }
