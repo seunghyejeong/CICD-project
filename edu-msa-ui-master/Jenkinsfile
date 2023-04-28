@@ -1,44 +1,55 @@
 pipeline {
-    agent any
-
-    environment {
-        DOCKER_HOME = tool 'Docker'
-        PATH = "$DOCKER_HOME/bin:$PATH"
+  agent any
+  
+  environment {
+    APP_NAME = 'edu-msa-ui'
+    IMAGE_NAME = 'seunghyejeong/dockerhubtest:1.0'
+    GIT_REPO = 'https://github.com/jeongbami/gitops-repository.git'
+  }
+  
+  stages {
+      stage('Checkout') {
+      steps {
+          git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
+      }
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
-            }
-        }
-        stage('Docker Installation') {
-            steps {
-                sh '''
-                    apt-get update
-                    apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-                    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-                    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-                    apt-get update
-                    apt-get install -y docker-ce docker-ce-cli containerd.io
-                    groupadd docker
-                    usermod -aG docker jenkins
-                '''
-            }
-        }
-        
-      stage('Build and Push Image') {
+    
+    stage('Build') {
+      steps {
+        sh '''
+          cd $APP_NAME
+          mvn clean package
+        '''
+      }
+    }
+    
+        stage('Build and Push Image') {
             steps {
                 script {
                     docker.build('seunghyejeong/dockerhubtest:1.0', '-f Dockerfile .')
                     withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
                         def image = docker.build("seunghyejeong/dockerhubtest:1.0")
-                    docker.withRegistry('https://dockerhub.com', 'seunghyejeong') {
-                        image.push()
-                    }
+                        docker.withRegistry('seunghyejeong/dockerhubtest:1.0', 'c3cff267-a1b7-4e04-9234-3903ce4b807b') {
+                            image.push()
                     }
                 }
             }
         }
-        }
-       } // Add additional stages for testing and deploying your application
+        
+       } 
+    
+    stage('Update Git Repo') {
+      steps {
+        git branch: 'main', url: "$GIT_REPO"
+        sh '''
+          cd edu-msa-ui
+          rm -rf target/
+          cp ../target/*.war webapps/
+          git add webapps/*.war
+          git commit -m "Update webapp"
+          git push origin main
+        '''
+      }
+    }
+  }
+}
