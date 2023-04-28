@@ -7,5 +7,21 @@ pipeline {
                 git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
             }
         }
+        
+        stage('Build and Push Image') {
+            steps {
+                script {
+                    docker.build('seunghyejeong/dockerhubtest:1.0', '-f Dockerfile .')
+                    withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+                        def image = docker.build("seunghyejeong/dockerhubtest:1.0")
+                        docker.withRegistry('seunghyejeong/dockerhubtest:1.0', 'c3cff267-a1b7-4e04-9234-3903ce4b807b') {
+                            image.push()
+                    }
+                }
+            }
+        }
+        
+       } // Add additional stages for testing and deploying your application
+    }
     }
 }
