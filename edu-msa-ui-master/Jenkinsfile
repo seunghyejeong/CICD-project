@@ -3,7 +3,7 @@ pipeline {
   
   enviroment {
     VERSION = "1.0.${BUILD_NUMBER}"
-    DOCKER_IMAGE = 'project:$VERSION'
+    DOCKER_IMAGE = "project:$VERSION"
   }
 
   stages {
@@ -30,7 +30,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
           sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
         }
-        sh "docker tag $DOCKER_IMAGE seunghyejeong/project:tagname:$VERSION"
+        sh "docker tag $DOCKER_IMAGE seunghyejeong/project:$VERSION"
         sh "docker push $DOCKER_IMAGE"
       }
     }
