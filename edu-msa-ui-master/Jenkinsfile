@@ -23,11 +23,6 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        post {
-            always {
-                junit 'target/surefire-reports/*.xml'
-            }
-        }
         stage('Update Git Repo') {
             steps {
                 git branch: 'main', url: "$GIT_REPO"
@@ -38,6 +33,11 @@ pipeline {
                     git push origin main
                 '''
             }
+        }
+    }
+    post {
+        always {
+            junit 'target/surefire-reports/*.xml'
         }
     }
 }
