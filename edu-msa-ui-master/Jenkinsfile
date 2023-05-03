@@ -1,48 +1,26 @@
 pipeline {
     agent any
-    environment {
-        GIT_REPO = 'https://github.com/jeongbami/gitops-repository.git'
-    }
+
     stages {
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
             }
         }
-        stage('Build') {
+        
+        stage('Build and Push Image') {
             steps {
-                docker {
-                    image 'maven:3.9.0-eclipse-temurin-11'
-                    args '-v /root/.m2:/root/.m2'
-                    sh 'mvn -B -DskipTests clean package'
+                script {
+                    docker.build('seunghyejeong/project_cicd:2.0', '-f Dockerfile .')
+                    withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+                        def image = docker.build("seunghyejeong/project_cicd:2.0")
+                        docker.withRegistry('seunghyejeong/project_cicd:2.0', 'seunghyejeong') {
+                            image.push()
+                    }
                 }
             }
         }
-        stage('Test') {
-            steps {
-                docker {
-                    image 'maven:3.9.0-eclipse-temurin-11'
-                    args '-v /root/.m2:/root/.m2'
-                    sh 'mvn test'
-                }
-            }
-        }
-        stage('Update Git Repo') {
-            steps {
-                git branch: 'main', url: "$GIT_REPO"
-                sh '''
-                    cd edu-msa-ui
-                    git add .
-                    git commit -m "Update webapp $DATE"
-                    git push origin main
-                '''
-            }
-        }
-        post {
-            always {
-                junit 'target/surefire-reports/*.xml'
-            }
-        }
+        
+       } // Add additional stages for testing and deploying your application
     }
-}
-
+ }
