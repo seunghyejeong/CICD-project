@@ -1,26 +1,39 @@
 pipeline {
-    agent any
+  agent any
+  
+    enviroment {
+      VERSION = "1.0.${BUILD_NUMBER}"
+      DOCKER_IMAGE = 'project:$VERSION'
+    }
 
-    stages {
+  stages {
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
             }
         }
-        
-        stage('Build and Push Image') {
-            steps {
-                script {
-                    docker.build('seunghyejeong/project_cicd:2.0', '-f Dockerfile .')
-                    withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-                        def image = docker.build("seunghyejeong/project_cicd:2.0")
-                        docker.withRegistry('seunghyejeong/project_cicd:2.0', 'seunghyejeong') {
-                            image.push()
-                    }
-                }
-            }
-        }
-        
-       } // Add additional stages for testing and deploying your application
+
+    stage('Build') {
+      steps {
+        sh 'mvn clean install'
+      }
     }
- }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t $DOCKER_IMAGE .'
+      }
+    }
+
+    stage('Push Docker Image') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+          sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+        }
+        sh "docker tag $DOCKER_IMAGE seunghyejeong/project:tagname:$VERSION"
+        sh "docker push $DOCKER_IMAGE"
+      }
+    }
+
+  }
+}
