@@ -1,17 +1,17 @@
 pipeline {
   agent any
   
-    enviroment {
-      VERSION = "1.0.${BUILD_NUMBER}"
-      DOCKER_IMAGE = 'project:$VERSION'
-    }
+  enviroment {
+    VERSION = "1.0.${BUILD_NUMBER}"
+    DOCKER_IMAGE = 'project:$VERSION'
+  }
 
   stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
-            }
+    stage('Checkout') {
+        steps {
+            git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
         }
+    }
 
     stage('Build') {
       steps {
@@ -35,5 +35,19 @@ pipeline {
       }
     }
 
+    stage('Deploy') {
+      steps {
+        script {
+          def argocd_server = 'my-argocd-server'
+          def argocd_token = credentials('argocd-token')
+          def application_name = 'my-app'
+          def environment_name = 'production'
+
+          sh "argocd login $argocd_server --insecure --grpc-web --username admin --password $argocd_token"
+          sh "argocd app create $application_name --repo https://github.com/my-repo --path kubernetes --dest-server https://my-kubernetes-cluster --dest-namespace my-namespace"
+          sh "argocd app sync $application_name --sync-policy automated --prune --namespace $environment_name"
+        }
+      }
+    }
   }
 }
