@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: edu-msa-ui
-        image: seunghyejeong/dockerhubtest:1.0
+        image: seunghyejeong/project_cicd:2.0
         ports:
         - containerPort: 8080

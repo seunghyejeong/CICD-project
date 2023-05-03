@@ -1,55 +1,41 @@
 pipeline {
-  agent any
-  
-  environment {
-    APP_NAME = 'edu-msa-ui'
-    IMAGE_NAME = 'seunghyejeong/dockerhubtest:1.0'
-    GIT_REPO = 'https://github.com/jeongbami/gitops-repository.git'
-  }
-  
-  stages {
-      stage('Checkout') {
-      steps {
-          git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
-      }
+    agent {
+        docker {
+            image 'maven:3.9.0-eclipse-temurin-11'
+            args '-v /root/.m2:/root/.m2'
+        }
     }
-    
-    stage('Build') {
-      steps {
-        sh '''
-          cd $APP_NAME
-          mvn clean package
-        '''
-      }
-    }
-    
-        stage('Build and Push Image') {
+    stages {
+        stage('Checkout') {
             steps {
-                script {
-                    docker.build('seunghyejeong/dockerhubtest:1.0', '-f Dockerfile .')
-                    withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-                        def image = docker.build("seunghyejeong/dockerhubtest:1.0")
-                        docker.withRegistry('seunghyejeong/dockerhubtest:1.0', 'c3cff267-a1b7-4e04-9234-3903ce4b807b') {
-                            image.push()
-                    }
+                git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
                 }
             }
         }
-        
-       } 
-    
-    stage('Update Git Repo') {
-      steps {
-        git branch: 'main', url: "$GIT_REPO"
-        sh '''
-          cd edu-msa-ui
-          rm -rf target/
-          cp ../target/*.war webapps/
-          git add webapps/*.war
-          git commit -m "Update webapp"
-          git push origin main
-        '''
-      }
+        stage('Update Git Repo') {
+            steps {
+                git branch: 'main', url: "$GIT_REPO"
+                sh '''
+                    cd edu-msa-ui
+                    git add .
+                    git commit -m "Update webapp $DATE"
+                    git push origin main
+                '''
+            }
+        }
     }
-  }
 }
