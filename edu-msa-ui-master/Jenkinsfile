@@ -27,7 +27,7 @@ pipeline {
     }
     stage('Maven Jar Build') {
         steps {
-            sh 'mvn clean package'
+            sh 'mvn -f /var/jenkins_home/workspace/test/edu-msa-ui-master clean package'
         }
         post {
                 failure {
@@ -40,6 +40,8 @@ pipeline {
     }
     stage('Docker Image Build') {
         steps {
+	    sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-masteri/target/ROOT.jar ./"
+            sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/Dockerfile ./"
             sh "docker build . -t ${dockerHubRegistry}:${currentBuild.number}"
             sh "docker build . -t ${dockerHubRegistry}:latest"
         }
