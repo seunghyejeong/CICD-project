@@ -2,13 +2,14 @@ pipeline {
   agent any
 
    environment {
-    dockerHubRegistry = 'seunghyejeong/project'
-    dockerHubRegistryCredential = 'seunghyejeong'
+    DOCKER_REGISTRY = 'seunghyejeong/project'
+    DOCKER_IMAGE_NAME= 'mywork'
+
   }
 
 
  tools {
-        maven 'maven' 
+        maven 'jenkins_maven' 
     }
   stages {
 
@@ -27,7 +28,7 @@ pipeline {
     }
     stage('Maven Jar Build') {
         steps {
-            sh 'mvn -f /var/jenkins_home/workspace/test/edu-msa-ui-master clean package'
+            sh 'mvn clean package'
         }
         post {
                 failure {
@@ -38,12 +39,34 @@ pipeline {
                 }
         }
     }
+    stage('Docker login') {
+        steps {
+            withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')])  {
+                  sh "docker login -u seunghyejeong -p tlqkfak0315"
+
+                                sleep 10 /* Wait uploading */ 
+                            }
+        }
+        post {
+                failure {
+                  echo 'Docker Image Push failure !'
+                  sh "docker rmi ${DOCKER_REGISTRY}:${currentBuild.number}"
+                  sh "docker rmi ${DOCKER_REGISTRY}:latest"
+                }
+                success {
+                  echo 'Docker image push success !'
+                  sh "docker rmi ${DOCKER_REGISTRY}:${currentBuild.number}"
+                  sh "docker rmi ${DOCKER_REGISTRY}:latest"
+                }
+        }
+     }
     stage('Docker Image Build') {
         steps {
-	    sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-masteri/target/ROOT.jar ./"
+            sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ./"
             sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/Dockerfile ./"
-            sh "docker build . -t ${dockerHubRegistry}:${currentBuild.number}"
-            sh "docker build . -t ${dockerHubRegistry}:latest"
+            sh "docker build -t $DOCKER_IMAGE_NAME ."
+            sh "docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY:${currentBuild.number}"
+            sh "docker push $DOCKER_REGISTRY:${currentBuild.number}"
         }
         post {
                 failure {
@@ -54,28 +77,7 @@ pipeline {
                 }
         }
     }
-    stage('Docker Image Push') {
-        steps {
-            withDockerRegistry([ credentialsId: dockerHubRegistryCredential, url: "https://index.docker.io/v1/" ]) {
-                                sh "docker push ${dockerHubRegistry}:${currentBuild.number}"
-                                sh "docker push ${dockerHubRegistry}:latest"
-
-                                sleep 10 /* Wait uploading */ 
-                            }
-        }
-        post {
-                failure {
-                  echo 'Docker Image Push failure !'
-                  sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
-                  sh "docker rmi ${dockerHubRegistry}:latest"
-                }
-                success {
-                  echo 'Docker image push success !'
-                  sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
-                  sh "docker rmi ${dockerHubRegistry}:latest"
-                }
-        }
-     }
 
     }
   }
+}
