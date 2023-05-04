@@ -1,25 +1,10 @@
 pipeline {
   agent any
 
-   environment {
-    DOCKER_REGISTRY = 'seunghyejeong/project'
-    DOCKER_IMAGE_NAME= 'mywork'
-    DOCKER_CERT_PATH = credentials('seunghyejeong')
-  }
-
  tools {
         maven 'maven'
-       def dockerHome = tool name: 'Docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-       def dockerLatest = "$dockerHome/docker-latest"
-       sh "curl -fsSL https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz | tar -xzC $dockerLatest --strip-components=1"
-
     }
   stages {
-    stage('foo') {
-  	  steps {
-          sh "docker version" // DOCKER_CERT_PATH is automatically picked up by the Docker client
-   	 }
-    }
     stage('Checkout Application Git Branch') {
         steps {
             git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
@@ -46,51 +31,5 @@ pipeline {
                 }
         }
     }
-    stage('Docker login') {
-        steps {
-            withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')])  {
-                  sh "docker login -u seunghyejeong -p tlqkfak0315!"
-                            }
-        }
-        post {
-                failure {
-                  echo 'Docker Login failure !'
-                }
-                success {
-                  echo 'Docker Login success !'
-                }
-        }
-     }
-    stage('Docker Image Build') {
-        steps {
-            sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ./"
-            sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/Dockerfile ./"
-            sh "docker build -t $DOCKER_IMAGE_NAME ."
-        }
-        post {
-                failure {
-                  echo 'Docker image build failure !'
-                  sh "docker rmi ${DOCKER_REGISTRY}:${currentBuild.number}"
-                  sh "docker rmi ${DOCKER_REGISTRY}:latest"
-                }
-                success {
-                  echo 'Docker image build success !'
-                }
-        }
-	}
-      stage('Docker Image tag,Push') {
-        steps {
-            sh "docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY:${currentBuild.number}"
-            sh "docker push $DOCKER_REGISTRY:${currentBuild.number}"
-        }
-        post {
-                failure {
-                  echo 'Docker image push failure !'
-                }
-                success {
-                  echo 'Docker image push success !'
-                }
-        }
-     }
-    }
   }
+}
