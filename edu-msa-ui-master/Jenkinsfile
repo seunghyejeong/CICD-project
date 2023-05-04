@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Checkout Git repository') {
             steps {
@@ -15,23 +15,19 @@ pipeline {
 
         stage('Log in to Docker registry') {
             steps {
-              withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-              docker.withRegistry('seunghyejeong/build-maven:1.0', 'seunghyejeong') {
-                    sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
-                  }
-              }
-          }
+                withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+                    docker.withRegistry('seunghyejeong/build-maven:1.0', 'seunghyejeong') {
+                        sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
+                    }
+                }
+            }
+        }
         stage('Push Docker image to registry') {
             steps {
                 sh 'docker push seunghyejeong/project:latest'
             }
         }
-        
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f deployment.yaml'
-            }
-        }
+
         stage('CI with Maven') {
             steps {
                 sh 'mvn clean install'
@@ -56,5 +52,4 @@ pipeline {
             cleanWs()
         }
     }
-}
 }
