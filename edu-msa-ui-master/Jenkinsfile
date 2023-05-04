@@ -9,7 +9,7 @@ pipeline {
 
 
  tools {
-        maven 'jenkins_maven' 
+        maven 'maven' 
     }
   stages {
 
@@ -28,7 +28,7 @@ pipeline {
     }
     stage('Maven Jar Build') {
         steps {
-            sh 'mvn clean package'
+            sh 'mvn -f /var/jenkins_home/workspace/test/edu-msa-ui-master/pom.xml clean package'
         }
         post {
                 failure {
@@ -42,7 +42,7 @@ pipeline {
     stage('Docker login') {
         steps {
             withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')])  {
-                  sh "docker login -u seunghyejeong -p tlqkfak0315"
+                  sh "docker login -u seunghyejeong -p tlqkfak0315!"
 
                                 sleep 10 /* Wait uploading */ 
                             }
@@ -80,3 +80,4 @@ pipeline {
 
     }
   }
+}
