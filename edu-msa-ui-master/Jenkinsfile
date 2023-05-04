@@ -9,7 +9,10 @@ pipeline {
 
  tools {
         maven 'maven'
-	 'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'Docker' 
+       def dockerHome = tool name: 'Docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+       def dockerLatest = "$dockerHome/docker-latest"
+       sh "curl -fsSL https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz | tar -xzC $dockerLatest --strip-components=1"
+
     }
   stages {
     stage('foo') {
