@@ -1,53 +1,15 @@
 pipeline {
-    agent any
-
-    stages {
-        stage('Checkout Git repository') {
-            steps {
-                git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
-            }
-        }
-        stage('Build Docker image') {
-            steps {
-                sh 'docker build -t seunghyejeong/project:latest .'
-            }
-        }
-
-        stage('Log in to Docker registry') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-                        sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
-                }
-            }
-        }
-        stage('Push Docker image to registry') {
-            steps {
-                sh 'docker push seunghyejeong/project:latest'
-            }
-        }
-
-        stage('CI with Maven') {
-            steps {
-                sh 'mvn clean install'
-            }
-        }
-
-        stage('Run Java application') {
-            steps {
-                sh 'java -jar myapp.jar'
-            }
-        }
-
-        stage('Git push') {
-            steps {
-                sh 'git add . && git commit -m "Update" && git push'
-            }
+    agent {
+        docker {
+            image 'maven:3.6.0-jdk-8-alpine'
+            args '-v $HOME/.m2:/root/.m2'
         }
     }
-
-    post {
-        always {
-            cleanWs()
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B'
+            }
         }
     }
 }
