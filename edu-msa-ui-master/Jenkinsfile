@@ -4,15 +4,18 @@ pipeline {
    environment {
     DOCKER_REGISTRY = 'seunghyejeong/project'
     DOCKER_IMAGE_NAME= 'mywork'
-
+    DOCKER_CERT_PATH = credentials('seunghyejeong')
   }
 
-
  tools {
-        maven 'maven' 
+        maven 'maven'
+	 'org.jenkinsci.plugins.docker.commons.tools.DockerTool' '20.04' 
     }
   stages {
-
+    stage('foo') {
+  	  steps {
+          sh "docker version" // DOCKER_CERT_PATH is automatically picked up by the Docker client
+   	 }
     stage('Checkout Application Git Branch') {
         steps {
             git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
