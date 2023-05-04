@@ -40,8 +40,6 @@ pipeline {
     }
     stage('Docker Image Build') {
         steps {
-            sh "cp target/ROOT.jar ./"
-            sh "cp deploy/Dockerfile ./"
             sh "docker build . -t ${dockerHubRegistry}:${currentBuild.number}"
             sh "docker build . -t ${dockerHubRegistry}:latest"
         }
@@ -56,7 +54,7 @@ pipeline {
     }
     stage('Docker Image Push') {
         steps {
-            withDockerRegistry([ credentialsId: dockerHubRegistryCredential, url: "" ]) {
+            withDockerRegistry([ credentialsId: dockerHubRegistryCredential, url: "https://index.docker.io/v1/" ]) {
                                 sh "docker push ${dockerHubRegistry}:${currentBuild.number}"
                                 sh "docker push ${dockerHubRegistry}:latest"
 
