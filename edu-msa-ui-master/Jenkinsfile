@@ -16,9 +16,7 @@ pipeline {
         stage('Log in to Docker registry') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-                    docker.withRegistry('seunghyejeong/build-maven:1.0', 'seunghyejeong') {
                         sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
-                    }
                 }
             }
         }
