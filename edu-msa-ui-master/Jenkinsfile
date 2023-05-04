@@ -9,7 +9,7 @@ pipeline {
 
  tools {
         maven 'maven'
-	 'org.jenkinsci.plugins.docker.commons.tools.DockerTool' '20.04' 
+	 'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'Docker' 
     }
   stages {
     stage('foo') {
