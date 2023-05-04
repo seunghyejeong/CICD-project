@@ -1,33 +1,59 @@
-def version = '1.0'
-version = String.format("%.1f", (version as Double) + 0.1)
-
 pipeline {
-  agent any
-
-  stages {
-    stage('Checkout') {
-      steps {
-        git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
-      }
-    }
-
-    stage('Build Docker Image') {
-      steps {
-            try {
-                docker.build('seunghyejeong/build-maven:1.1', '-f Dockerfile .')
-                withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-                    def image = docker.build("seunghyejeong/project:${version}")
-                    docker.withRegistry('https://index.docker.io/v1/', 'seunghyejeong') {
-                        image.push()
-                    }
-                }
-            } catch (Exception ex) {
-                println "Error: ${ex.getMessage()}"
-                currentBuild.result = 'FAILURE'
+    agent any
+    
+    stages {
+        stage('Checkout Git repository') {
+            steps {
+                git url: 'https://github.com/jeongbami/gitops-repository.git', branch: 'main'
             }
-          }
         }
-      }
+        stage('Build Docker image') {
+            steps {
+                sh 'docker build -t seunghyejeong/project:latest .'
+            }
+        }
+
+        stage('Log in to Docker registry') {
+            steps {
+              withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+              docker.withRegistry('seunghyejeong/build-maven:1.0', 'seunghyejeong') {
+                    sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
+                  }
+              }
+          }
+        stage('Push Docker image to registry') {
+            steps {
+                sh 'docker push seunghyejeong/project:latest'
+            }
+        }
+        
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f deployment.yaml'
+            }
+        }
+        stage('CI with Maven') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+
+        stage('Run Java application') {
+            steps {
+                sh 'java -jar myapp.jar'
+            }
+        }
+
+        stage('Git push') {
+            steps {
+                sh 'git add . && git commit -m "Update" && git push'
+            }
+        }
     }
 
-
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
