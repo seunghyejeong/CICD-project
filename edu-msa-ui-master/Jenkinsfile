@@ -19,10 +19,10 @@ pipeline {
         }
         post {
                 failure {
-                  echo 'Repository clone failure !'
+                  echo 'Failed to clone repository'
                 }
                 success {
-                  echo 'Repository clone success !'
+                  echo 'Repository cloned successfully'
                 }
         }
     }
@@ -32,10 +32,10 @@ pipeline {
         }
         post {
                 failure {
-                  echo 'Maven jar build failure !'
+                  echo 'Failed to build Maven'
                 }
                 success {
-                  echo 'Maven jar build success !'
+                  echo 'Maven war built successfully!'
                 }
         }
     }
@@ -43,20 +43,14 @@ pipeline {
         steps {
             withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')])  {
                   sh "docker login -u seunghyejeong -p tlqkfak0315!"
-
-                                sleep 10 /* Wait uploading */ 
                             }
         }
         post {
                 failure {
-                  echo 'Docker Image Push failure !'
-                  sh "docker rmi ${DOCKER_REGISTRY}:${currentBuild.number}"
-                  sh "docker rmi ${DOCKER_REGISTRY}:latest"
+                  echo 'Docker Login failure !'
                 }
                 success {
-                  echo 'Docker image push success !'
-                  sh "docker rmi ${DOCKER_REGISTRY}:${currentBuild.number}"
-                  sh "docker rmi ${DOCKER_REGISTRY}:latest"
+                  echo 'Docker Login success !'
                 }
         }
      }
@@ -65,18 +59,32 @@ pipeline {
             sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ./"
             sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/Dockerfile ./"
             sh "docker build -t $DOCKER_IMAGE_NAME ."
-            sh "docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY:${currentBuild.number}"
-            sh "docker push $DOCKER_REGISTRY:${currentBuild.number}"
+\
         }
         post {
                 failure {
                   echo 'Docker image build failure !'
+                  sh "docker rmi ${DOCKER_REGISTRY}:${currentBuild.number}"
+                  sh "docker rmi ${DOCKER_REGISTRY}:latest"
                 }
                 success {
                   echo 'Docker image build success !'
                 }
         }
-    }
+      stage('Docker Image tag,Push') {
+        steps {
+            sh "docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY:${currentBuild.number}"
+            sh "docker push $DOCKER_REGISTRY:${currentBuild.number}"
+        }
+        post {
+                failure {
+                  echo 'Docker image push failure !'
+                }
+                success {
+                  echo 'Docker image push success !'
+                }
+        }
+     }
 
     }
   }
