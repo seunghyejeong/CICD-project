@@ -1,27 +1,28 @@
  pipeline { 
     environment { 
         repository = "seunghyejeong/project"  
-        DOCKERHUB_CREDENTIALS = credentials('docker-token')
         dockerImage = '' 
   }
-  agent any
+  agent any 
 stages {
     stage('Building our image') {
         steps {
             script {
-                dir('/var/jenkins_home/workspace/git-maven/edu-msa-ui-master/pipeline') {
-                    sh "cp /var/jenkins_home/workspace/docker-build-deploy/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ."
+                dir('/var/jenkins_home/workspace/docker-build-deploy/edu-msa-ui-master/docker') {
+                    sh "cp /var/jenkins_home/workspace/git-maven/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ."
                     dockerImage = docker.build repository + ":$BUILD_NUMBER"
                 }
             }
         }
-    } 
-      stage('Login'){
+    }      stage('Login'){
           steps{
-              sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+
+                        sh 'docker login -u seunghyejeong -p tlqkfak0315! seunghyejeong'
+                    
           }
-      }
-      stage('Deploy our image') { 
+      }      
+stage('Deploy our image') { 
           steps { 
               script {
                 sh 'docker push $repository:$BUILD_NUMBER'
