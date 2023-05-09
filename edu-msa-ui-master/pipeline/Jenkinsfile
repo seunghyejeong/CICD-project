@@ -4,16 +4,18 @@
         DOCKERHUB_CREDENTIALS = credentials('docker-token')
         dockerImage = '' 
   }
-  agent any 
-  stages { 
-      stage('Building our image') { 
-          steps { 
-              script { 
-                  sh "cp /var/jenkins_home/workspace/git-maven/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war /var/jenkins_home/workspace/docker-build-deploy/docker"
-                  dockerImage = docker.build repository + ":$BUILD_NUMBER" 
-              }
-          } 
-      }
+  agent any
+stages {
+    stage('Building our image') {
+        steps {
+            script {
+                dir('/var/jenkins_home/workspace/test/edu-msa-ui-master/pipeline') {
+                    sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ."
+                    dockerImage = docker.build repository + ":$BUILD_NUMBER"
+                }
+            }
+        }
+    } 
       stage('Login'){
           steps{
               sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
