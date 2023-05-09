@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Maven Jar Build') {
         steps {
-            sh 'mvn -f /var/jenkins_home/workspace/test/edu-msa-ui-master/pom.xml clean package'
+            sh 'mvn -f /var/jenkins_home/workspace/git-maven/edu-msa-ui-master/pom.xml clean package'
         }
         post {
                 failure {

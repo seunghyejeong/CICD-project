@@ -9,8 +9,8 @@ stages {
     stage('Building our image') {
         steps {
             script {
-                dir('/var/jenkins_home/workspace/test/edu-msa-ui-master/pipeline') {
-                    sh "cp /var/jenkins_home/workspace/test/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ."
+                dir('/var/jenkins_home/workspace/git-maven/edu-msa-ui-master/pipeline') {
+                    sh "cp /var/jenkins_home/workspace/docker-build-deploy/edu-msa-ui-master/target/edu-msa-ui-1.0.0.war ."
                     dockerImage = docker.build repository + ":$BUILD_NUMBER"
                 }
             }
