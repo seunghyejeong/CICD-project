@@ -1,10 +1,10 @@
- pipeline { 
+pipeline { 
     environment { 
-        repository = "seunghyejeong/project"  
+        repository = "seunghyejeong/project"  //docker hub id와 repository 이름
         dockerImage = '' 
   }
   agent any 
-stages {
+  stages {
     stage('Building our image') {
         steps {
             script {
@@ -14,25 +14,26 @@ stages {
                 }
             }
         }
-    }      stage('Login'){
+    }      
+  stage('Login'){
           steps{
                 withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
-
-                        sh 'docker login -u seunghyejeong -p tlqkfak0315! seunghyejeong'
-                    
+                        sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
           }
-      }      
-stage('Deploy our image') { 
+      }
+    }
+    stage('Deploy our image') { 
           steps { 
               script {
-                sh 'docker push $repository:$BUILD_NUMBER'
+                sh 'docker push $repository:$BUILD_NUMBER' //docker push
               } 
           }
       } 
-      stage('Cleaning up') { 
+    stage('Cleaning up') { 
       steps { 
-              sh "docker rmi $repository:$BUILD_NUMBER"
+              sh "docker rmi $repository:$BUILD_NUMBER" // docker image 제거
           }
       } 
   }
 }
+
