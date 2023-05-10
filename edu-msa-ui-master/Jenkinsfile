@@ -45,9 +45,11 @@ sh 'docker login -u seunghyejeong -p tlqkfak0315!'
 stage('Deploy our image') { 
 steps { 
 script {
+ dir(' /var/jenkins_home/workspace/msa-project/edu-msa-ui-master/'){
     sh 'docker build -t edu-msa-ui-master .'
     sh 'docker tag edu-msa-ui-master seunghyejeong/edu-msa-ui-master:$BUILD_NUMBER'
     sh 'docker push seunghyejeong/edu-msa-ui-master:$BUILD_NUMBER'
+}
 } 
 }
 }
