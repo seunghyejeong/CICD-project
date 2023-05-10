@@ -42,7 +42,7 @@ sh 'cp /var/jenkins_home/workspace/msa-project/edu-msa-ui-master/target/*.war /v
 
 stage('Docker Login'){
 steps{
-withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+withCredentials([usernamePassword(credentialsId: 'docker-token', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
 sh 'docker login -u seunghyejeong -p tlqkfak0315!'
 }   
 }
