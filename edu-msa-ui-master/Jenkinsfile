@@ -36,8 +36,8 @@ echo 'Maven war built successfully!'
 
 stage('ready to docker build'){
 steps {
-sh 'cp /var/jenkins_home/workspace/msa-project/edu-msa-ui-master/target/*.war /var/jenkins_home/workspace/msa-project/edu-msa-file-master/
-'}
+sh 'cp /var/jenkins_home/workspace/msa-project/edu-msa-ui-master/target/*.war /var/jenkins_home/workspace/msa-project/edu-msa-file-master/'
+}
 }
 
 stage('Docker Login'){
