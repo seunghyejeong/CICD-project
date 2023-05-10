@@ -3,6 +3,7 @@ pipeline {
 
   tools {
     maven 'maven' 
+    docker 'docker'
   }
   stages {
 
@@ -21,7 +22,7 @@ pipeline {
     }
     stage('Maven Jar Build') {
       steps {
-        sh 'mvn -f /var/jenkins_home/workspace/msa-project/edu-msa-ui-master/pom.xml clean package'
+        sh 'mvn clean package'
       }
       post {
         failure {
@@ -42,7 +43,7 @@ pipeline {
       steps{
         withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
 
-          sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
+          sh 'docker login -u seunghyejeong -p tlqkfak0315!'
         }   
       }
     }
@@ -50,12 +51,11 @@ pipeline {
       steps { 
         script {
           dir('msa-project/edu-msa-file-master/Docker/edu-msa-ui')
-          sh 'docker build -t edu-msa-ui .' 
-          sh 'docker tag edu-msa-ui seunghyejeong/edu-msa-ui:$BUILD_NUMBER' 
-          sh 'docker push seunghyejeong/project:$BUILD_NUMBER' 
+          sh 'docker build -t edu-msa-ui-master .' 
+          sh 'docker tag edu-msa-ui-master seunghyejeong/edu-msa-ui-master:$BUILD_NUMBER' 
+          sh 'docker push seunghyejeong/edu-msa-ui-master:$BUILD_NUMBER' 
         } 
       }
     } 
   }
 }
-
