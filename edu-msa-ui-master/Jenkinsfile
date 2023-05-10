@@ -1,35 +1,61 @@
 pipeline {
   agent any
 
- tools {
-        maven 'maven'
-    }
+  tools {
+    maven 'maven' 
+  }
   stages {
+
     stage('Checkout Application Git Branch') {
-        steps {
-            git url: 'https://github.com/seunghyejeong/gitops-repository.git', branch: 'main'
+      steps {
+        git url: 'https://github.com/seunghyejeong/gitops-repository.git', branch: 'main'
+      }
+      post {
+        failure {
+          echo 'Failed to clone repository'
         }
-        post {
-                failure {
-                  echo 'Failed to clone repository'
-                }
-                success {
-                  echo 'Repository cloned successfully'
-                }
+        success {
+          echo 'Repository cloned successfully'
         }
+      }
     }
     stage('Maven Jar Build') {
-        steps {
-            sh 'mvn -f /var/jenkins_home/workspace/git-maven/edu-msa-ui-master/pom.xml clean package'
+      steps {
+        sh 'mvn -f /var/jenkins_home/workspace/msa-project/edu-msa-ui-master/pom.xml clean package'
+      }
+      post {
+        failure {
+          echo 'Failed to build Maven'
         }
-        post {
-                failure {
-                  echo 'Failed to build Maven'
-                }
-                success {
-                  echo 'Maven war built successfully!'
-                }
+        success {
+          echo 'Maven war built successfully!'
         }
+      }
     }
+    stage('ready to docker build'){
+      steps {
+        dir('msa-project/edu-msa-ui-master')
+        sh 'cp ./target/*.war ../edu-msa-file-master/Docker/edu-msa-ui-msater/'
+      }
+    }
+    stage('Docker Login'){
+      steps{
+        withCredentials([usernamePassword(credentialsId: 'seunghyejeong', passwordVariable: 'tlqkfak0315!', usernameVariable: 'seunghyejeong')]) {
+
+          sh 'docker login -u seunghyejeong -p tlqkfak0315 seunghyejeong'
+        }   
+      }
+    }
+    stage('Deploy our image') { 
+      steps { 
+        script {
+          dir('msa-project/edu-msa-file-master/Docker/edu-msa-ui')
+          sh 'docker build -t edu-msa-ui .' 
+          sh 'docker tag edu-msa-ui seunghyejeong/edu-msa-ui:$BUILD_NUMBER' 
+          sh 'docker push seunghyejeong/project:$BUILD_NUMBER' 
+        } 
+      }
+    } 
   }
 }
+
