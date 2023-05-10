@@ -3,15 +3,13 @@ pipeline {
 
   tools{
   maven 'maven' 
-  dockerTool 'docker'
   }
 
 stages {
 stage('Checkout Application Git Branch') {
 steps {
 git url: 'https://github.com/seunghyejeong/gitops-repository.git', branch: 'main'
-}
-}         
+}        
 post {
 failure {
 echo 'Failed to clone repository'
@@ -20,7 +18,7 @@ success {
 echo 'Repository cloned successfully'
 }
 }
-
+}
 
 stage('Maven Jar Build') {
 steps {
