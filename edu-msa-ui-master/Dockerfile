@@ -1,5 +1,5 @@
 # Start with a base image containing Tomcat server running with JRE8
-FROM tomcat:9-jre8 AS build
+FROM maven:3.6.0-jdk-8-slim AS build
 
 # Set the working directory to /app
 WORKDIR /app
@@ -9,6 +9,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Build the application with Maven
+RUN mvn package
 
 # Start with a base image containing Tomcat server running with JRE8
 FROM tomcat:9-jre8-alpine
