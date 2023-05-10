@@ -36,9 +36,7 @@ echo 'Maven war built successfully!'
 
 stage('ready to docker build'){
 steps {
-dir('/edu-msa-ui-master'){
 sh 'cp ./target/*.war ../edu-msa-file-master/Docker/edu-msa-ui-msater/'
-}
 }
 }
 
