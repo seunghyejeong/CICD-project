@@ -45,7 +45,7 @@ sh 'docker login -u seunghyejeong -p tlqkfak0315!'
 stage('Deploy our image') { 
 steps { 
 script {
-    sh 'cd /var/jenkins_home/workspace/msa-project/edu-msa-board-master && docker build -t edu-msa-board-master .'
+    sh 'cd /var/jenkins_home/workspace/edu-msa-board/edu-msa-board-master && docker build -t edu-msa-board-master .'
     sh 'docker tag edu-msa-board-master seunghyejeong/edu-msa-board-master:latest'
     sh 'docker push seunghyejeong/edu-msa-board-master:latest'
 } 
