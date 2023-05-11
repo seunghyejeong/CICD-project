@@ -1,12 +1,12 @@
-apiVersion:  v1
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql-msa-board-config
 data:
   init.sql: |
-    CREATE DATABASE msa_board default CHARACTER SET UTF8;
+    CREATE DATABASE IF NOT EXISTS msa_board DEFAULT CHARACTER SET UTF8;
     USE msa_board;
-    CREATE TABLE `TB_BOARD` (
+    CREATE TABLE IF NOT EXISTS `TB_BOARD` (
       `board_seq` int(11) NOT NULL AUTO_INCREMENT,
       `board_title` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
       `board_text` mediumtext COLLATE utf8_unicode_ci,
@@ -17,8 +17,8 @@ data:
       `update_dt` datetime NOT NULL,
       PRIMARY KEY (`board_seq`)
     ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,13 +45,11 @@ spec:
           name: mysql-board
         volumeMounts:
         - name: mysql-msa-board-config
-          mountPath: /docker-entrypoint-initdb.d/init.sql
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
-      - name: mysql-board
       - name: mysql-msa-board-config
         configMap:
           name: mysql-msa-board-config
-
 
 ---
 apiVersion: v1
@@ -62,9 +60,7 @@ spec:
   type: NodePort
   ports:
   - port: 3306
-    protocol: TCP
     targetPort: 3306
     nodePort: 30501
   selector:
     app: mysql-board
-
