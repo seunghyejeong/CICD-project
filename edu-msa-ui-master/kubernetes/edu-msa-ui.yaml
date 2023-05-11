@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ui-msa
-        image: seunghyejeong/edu-msa-ui-master:45
+        image: seunghyejeong/edu-msa-ui-master:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 28080     
