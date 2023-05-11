@@ -9,7 +9,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Build the application with Maven
-RUN mvn package
+RUN mvn clean package
 
 # Start with a base image containing Tomcat server running with JRE8
 FROM tomcat:9-jre8-alpine
