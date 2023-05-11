@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: board-msa
-        image: seunghyejeong/edu-msa-ui-master:latest
+        image: seunghyejeong/edu-msa-board-master:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 28082         

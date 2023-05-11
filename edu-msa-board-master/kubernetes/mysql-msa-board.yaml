@@ -48,7 +48,7 @@ spec:
           mountPath: /docker-entrypoint-initdb.d/init.sql
       volumes:
       - name: mysql-board
-      - name: mysql-msa-board.config
+      - name: mysql-msa-board-config
         configMap:
           name: mysql-msa-board-config
 
