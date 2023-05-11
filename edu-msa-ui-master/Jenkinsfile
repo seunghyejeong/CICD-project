@@ -46,8 +46,8 @@ stage('Deploy our image') {
 steps { 
 script {
     sh 'cd /var/jenkins_home/workspace/msa-project/edu-msa-ui-master && docker build -t edu-msa-ui-master .'
-    sh 'docker tag edu-msa-ui-master seunghyejeong/edu-msa-ui-master:$BUILD_NUMBER'
-    sh 'docker push seunghyejeong/edu-msa-ui-master:$BUILD_NUMBER'
+    sh 'docker tag edu-msa-ui-master seunghyejeong/edu-msa-ui-master:latest'
+    sh 'docker push seunghyejeong/edu-msa-ui-master:latest'
 } 
 }
 }
