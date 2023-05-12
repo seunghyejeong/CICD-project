@@ -58,7 +58,7 @@ metadata:
   name: mysql-msa-comment
 spec:
   type: NodePort
-  ports:c
+  ports:
   - port: 3306
     protocol: TCP
     targetPort: 3306
