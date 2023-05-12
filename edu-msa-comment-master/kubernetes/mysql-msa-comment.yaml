@@ -4,7 +4,7 @@ metadata:
   name: mysql-msa-comment-config
 data:
   init.sql: |
-    CREATE DATABASE msa_comment DEFAULT CHARACTER SET UTF8;
+    CREATE DATABASE msa_comment;
     USE msa_comment;
     CREATE TABLE `TB_COMMENT` (
       `comment_seq` int(11) NOT NULL AUTO_INCREMENT,
@@ -46,6 +46,7 @@ spec:
         volumeMounts:
         - name: mysql-msa-comment-config
           mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
       volumes:
       - name: mysql-comment
       - name: mysql-msa-comment-config
@@ -66,4 +67,5 @@ spec:
     nodePort: 30601
   selector:
     app: mysql-comment
+
 
