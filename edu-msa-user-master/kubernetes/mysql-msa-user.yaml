@@ -4,7 +4,7 @@ metadata:
   name: mysql-msa-user-config
 data:
   init.sql: |
-    CREATE DATABASE IF NOT EXISTS msa_user DEFAULT CHARACTER SET UTF8;
+    CREATE DATABASE msa_user;
     USE msa_user;
     CREATE TABLE IF NOT EXISTS `TB_USER` (
       `user_seq` int(11) NOT NULL AUTO_INCREMENT,
@@ -46,7 +46,9 @@ spec:
         volumeMounts:
         - name: mysql-msa-user-config
           mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: /init.sql
       volumes:
+      - name: mysql-user
       - name: mysql-msa-user-config
         configMap:
           name: mysql-msa-user-config
