@@ -31,4 +31,4 @@ COPY --from=build /app/target/${JAR_FILE} ./webapps/edu-msa-ui-1.0.0.war
 EXPOSE 28080
 
 # Start the Tomcat server
-CMD ["catalina.sh", "run"]
+#CMD ["catalina.sh", "run"]
