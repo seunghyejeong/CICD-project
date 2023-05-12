@@ -6,7 +6,7 @@ data:
   init.sql: |
     CREATE DATABASE msa_user;
     USE msa_user;
-    CREATE TABLE IF NOT EXISTS `TB_USER` (
+    CREATE TABLE `TB_USER` (
       `user_seq` int(11) NOT NULL AUTO_INCREMENT,
       `user_id` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
       `user_passwd` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
@@ -46,6 +46,7 @@ spec:
         volumeMounts:
         - name: mysql-msa-user-config
           mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
       volumes:
       - name: mysql-user
       - name: mysql-msa-user-config
