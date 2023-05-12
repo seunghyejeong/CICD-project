@@ -23,6 +23,7 @@ echo 'Repository cloned successfully'
 stage('Maven Jar Build') {
 steps {
 sh 'mvn -f /var/jenkins_home/workspace/edu-msa-zuul/edu-msa-zuul-master/pom.xml clean package'
+sh "cp ${WORKSPACE}/edu-msa-zuul-1.0.0.war ."
 }
 post {
 failure {
