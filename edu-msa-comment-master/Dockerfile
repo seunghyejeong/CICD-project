@@ -30,5 +30,3 @@ COPY --from=build /app/target/${JAR_FILE} ./webapps/edu-msa-comment-1.0.0.war
 # Expose the port the application will listen on
 EXPOSE 28083
 
-# Start the Tomcat server
-CMD ["catalina.sh", "run"]
