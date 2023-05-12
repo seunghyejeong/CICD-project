@@ -4,9 +4,9 @@ metadata:
   name: mysql-msa-board-config
 data:
   init.sql: |
-    CREATE DATABASE IF NOT EXISTS msa_board DEFAULT CHARACTER SET UTF8;
+    CREATE DATABASE msa_board DEFAULT CHARACTER SET UTF8;
     USE msa_board;
-    CREATE TABLE IF NOT EXISTS `TB_BOARD` (
+    CREATE TABLE `TB_BOARD` (
       `board_seq` int(11) NOT NULL AUTO_INCREMENT,
       `board_title` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
       `board_text` mediumtext COLLATE utf8_unicode_ci,
@@ -47,6 +47,7 @@ spec:
         - name: mysql-msa-board-config
           mountPath: /docker-entrypoint-initdb.d
       volumes:
+      - name: mysql-board
       - name: mysql-msa-board-config
         configMap:
           name: mysql-msa-board-config
