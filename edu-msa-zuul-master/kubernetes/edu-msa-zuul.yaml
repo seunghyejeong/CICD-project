@@ -38,7 +38,7 @@ metadata:
     app: zuul-msa  
 spec:
   ports:
-  - nodePort: 30801
+  - nodePort: 30101
     port: 28081
     protocol: TCP
     targetPort: 28081
