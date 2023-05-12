@@ -46,7 +46,6 @@ spec:
         volumeMounts:
         - name: mysql-msa-user-config
           mountPath: /docker-entrypoint-initdb.d/init.sql
-          subPath: /init.sql
       volumes:
       - name: mysql-user
       - name: mysql-msa-user-config
