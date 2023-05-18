@@ -33,15 +33,6 @@ echo 'Maven war built successfully!'
 }
 }
 }
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv('sonarqube') { // management에 추가한 sonarqube scanner 이름 
-          script {
-            def scannerHome = tool 'SonarScanner'
-            "${scannerHome}/bin/sonar-scanner"
-          }
-        }
-      }
     
 stage('Docker Login'){
 steps{
