@@ -1,7 +1,6 @@
 def projects = [
   'edu-msa-board-master',
   'edu-msa-comment-master',
-  'edu-msa-file-master',
   'edu-msa-ui-master',
   'edu-msa-user-master'
 ]
