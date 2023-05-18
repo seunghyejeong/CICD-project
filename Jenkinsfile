@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Build && SonarQube analysis') {
             steps {
-                withSonarQubeEnv('http://10.101.0.104:9000') {
+                withSonarQubeEnv('sonarqube') {
                     sh 'mvn clean package sonar:sonar'
                 }
             }
