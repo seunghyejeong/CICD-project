@@ -25,7 +25,7 @@ pipeline {
       steps {
         script {
        	 withCredentials([
-          string(credentialsId: 'jenkins-sonarqube-token', variable: 'SONAR_TOKEN')
+          string(credentialsId: 'jenkins-sonarqube', variable: 'SONAR_TOKEN')
        	 ]) {
           for (def project in projects) {
             dir(project) {
