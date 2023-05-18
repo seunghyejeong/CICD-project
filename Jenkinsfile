@@ -24,6 +24,9 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         script {
+       	 withCredentials([
+          string(credentialsId: 'jenkins-sonarqube-token', variable: 'SONAR_TOKEN')
+       	 ]) {
           for (def project in projects) {
             dir(project) {
               withSonarQubeEnv('sonarqube') {
